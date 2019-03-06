@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Portfolio
@@ -6,6 +7,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.http import HttpResponse
 
 def home(request):
     portfolios = Portfolio.objects
@@ -54,3 +57,22 @@ def delete(request, portfolio_id):
     else:
         messages.info(request, '권한이 없습니다')
         return redirect('home')
+
+@login_required
+@require_POST
+def post_like(request):
+    pk = request.POST.get('pk', None) 
+    portfolio = get_object_or_404(Portfolio, pk=pk)
+    post_like, post_like_created = portfolio.like_set.get_or_create(user=request.user)
+
+    if not post_like_created:
+        post_like.delete()
+        message = "좋아요 취소"
+    else:
+        message = "좋아요"
+
+    context = {'like_count': portfolio.like_count,
+               'message': message,
+               'idname': request.user.get_username() }
+
+    return HttpResponse(json.dumps(context), content_type="application/json")

@@ -2,6 +2,7 @@ from django.db import models
 from django import forms
 from django.utils import timezone 
 from django.contrib.auth.models import User
+from django.conf import settings
 
 def user_path(instance, filename):
     from random import choice
@@ -17,6 +18,11 @@ class Portfolio(models.Model):
     description = models.CharField(max_length=500)
     idname = models.ForeignKey(User, on_delete = models.CASCADE)
     pub_date = models.DateTimeField('date published', default=timezone.now)
+    like_user_set = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='like_user_set', through="Like")
+
+    @property
+    def like_count(self):
+        return self.like_user_set.count()
 
     def __str__(self): 
         return self.title
@@ -24,4 +30,12 @@ class Portfolio(models.Model):
 
     def summary(self):
         return self.description[:100]
-    
+
+class Like(models.Model):
+    portfolio = models.ForeignKey('Portfolio', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (
+            ('user', 'portfolio')
+        )
