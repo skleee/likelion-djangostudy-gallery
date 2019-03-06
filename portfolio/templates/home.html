@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    }
+
+    @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+    }
+</style>
+
+<main role="main">
+
+{% if messages %}
+{% for message in messages %}
+<ul class="messages alert alert-danger" role="alert">
+    <p {% if message.tags %} class="{{ message.tags }}" style="margin-bottom: 0;" {% endif %}>{{ message }}</p>
+</ul>
+{% endfor %}
+{% endif %}
+
+<section class="jumbotron text-center">
+    <div class="container">
+        <h1 class="jumbotron-heading">Gallery</h1>
+        <p class="lead text-muted">Share your photos</p>
+        <p>
+        <a href="{% url 'new' %}"><button type="button" class="btn btn-primary my-2">New Post</button></a></div>
+        </p>
+    </div>
+</section>
+
+<div class="album py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      {% for portfolio in portfolios.all %}
+      <div class="col-md-4">
+          <div class="card mb-4 shadow-sm">
+              <img class="card-img-top" src="{{ portfolio.image.url }}" alt=" Card image cap">
+              <div class="card-body">
+                <h5 class="card-title">{{ portfolio.title }}</h5>
+                <p class="card-text">{{ portfolio.summary }} ... </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <a href="{% url 'detail' portfolio.id %}" class="btn btn-sm btn-outline-secondary">View</a>
+                    <a href="/portfolio/{{ portfolio.id }}/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <a href="/portfolio/{{ portfolio.id }}/delete" onclick="return confirm('정말 삭제하시겠습니까?')" class="btn btn-sm btn-outline-secondary">Delete</a>
+                  </div>
+                  <small class="text-muted">posted by <b>{{ portfolio.idname }}</b></small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+</div>
+</main>
+
+
+{% endblock %}

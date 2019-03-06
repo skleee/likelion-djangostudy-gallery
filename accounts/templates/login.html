@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if user.is_active %}
+<h2> Welcome, {{user.username}} </h2>
+<a href="{% url 'logout' %}">Logout</a>
+
+{% else %}
+<h1>Login!</h1>
+<form method="POST" action="{% url 'login' %}">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input class="btn btn-primary" type="submit" value="Login!">
+</form>
+{% endif %}
+{% endblock %}
